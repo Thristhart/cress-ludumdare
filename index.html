@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cress</title>
+    <link rel="stylesheet" href="/ld26/lobbystyle.css" />
+    <script src="/ld26/socket.io/socket.io.js"></script>
+    <script>
+        var socket;
+        var gamelist;
+        function setupSocket()
+        {
+          socket = io.connect(null, {resource: 'ld26/socket.io'});
+          socket.on("room", function(data) {
+            var row = getRoomRow(data.roomId);
+            if(row)
+              updateRow(row, data.players, data.turn);
+            else
+              addGame(data.roomId, data.players, data.turn);
+          });
+          socket.on("deleteRoom", function(data) {
+            var row = getRoomRow(data)
+            if(row)
+              gamelist.removeChild(row);
+          });
+        }
+        window.onload = function()
+        {
+          setupSocket();
+          gamelist = document.getElementById("gamelist");
+
+          var private = document.getElementById("private");
+          private.onchange = function() {
+            if(private.checked)
+              document.getElementById("newgame").href += "p";
+            else
+              document.getElementById("newgame").href = "/ld26/room/";
+          }
+          sorttable.init();
+        }
+        function getRoomRow(id)
+        {
+          return document.getElementById(id);
+        }
+        function updateRow(row, players, turn)
+        {
+          row.children[1].innerHTML = players + "/2";
+          row.children[2].innerHTML = turn;
+        }
+
+        function addGame(id, players, turn)
+        {
+          var row = document.createElement("tr");
+          row.id = id;
+
+          var id_col = document.createElement("td");
+          var players_col = document.createElement("td");
+          var turn_col = document.createElement("td");
+
+          var link = document.createElement("a");
+
+          link.href = "/ld26/room/" + id + "/";
+          link.innerHTML = id;
+
+          players_col.innerHTML = players + "/2";
+
+          turn_col.innerHTML = turn;
+
+          id_col.appendChild(link);
+          row.appendChild(id_col);
+          row.appendChild(players_col);
+          row.appendChild(turn_col);
+          gamelist.appendChild(row);
+        }
+    </script>
+    <script src="/ld26/sorttable.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Cress</h1>
+      <a href="/ld26/room/" id="newgame">Create new game</a>
+      <input type="checkbox" id="private" name="private" />
+      <label for="private">Private (won't be listed in lobby)</label>
+      <br />
+      <a href="/ld26/help">How do I play?</a>
+      <table id="gametable" class="sortable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Players</th>
+            <th>Turn</th>
+          </tr>
+        </thead>
+        <tbody id="gamelist">
+
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

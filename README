@@ -1,0 +1,7 @@
+Cress is a two-person, multiplayer boardgame I designed for LD48 #26, themed "Minimalism".
+
+PLEASE NOTE: this was made in 48 hours! It's left here for posterity, but if you want to submit yourself to the hell of well-intentioned horrible decisions that is the source code, it's on you. Do not send me an email complaining about the bad code here. I know.
+
+See help.html for details on how to play. 
+
+NOTE: if you want to run this yourself (god help you) you'll need to supply the screenshots used in help.html, because I was too lazy to figure out how to properly serve images in node. Shoot me.

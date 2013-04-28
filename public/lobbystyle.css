@@ -1,0 +1,28 @@
+body
+{
+  height: 100%;
+}
+#container
+{
+  margin: auto;
+  width: 60%;
+  overflow: auto;
+  height: 20em;
+}
+#gametable
+{
+  text-align: center;
+  width: 100%;
+}
+a
+{
+  color: black;
+}
+h1 { text-align: center; width: 100%;}
+/* Sortable tables */
+table.sortable thead {
+    background-color:#eee;
+    color:#666666;
+    font-weight: bold;
+    cursor: default;
+}

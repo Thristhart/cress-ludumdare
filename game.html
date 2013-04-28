@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <title>Room ROOM_UUID_GOES_HERE</title>
+    <link rel="stylesheet" href="http://tom.shea.at/ld26/style.css" />
+    <script src="http://tom.shea.at/ld26/socket.io/socket.io.js"></script>
+    <script src="/ld26/draw.js"></script>
+    <script src="/ld26/rAF.js"></script>
+    <script src="/ld26/game.js"></script>
+    <script>
+        var roomUUID = "ROOM_UUID_GOES_HERE";
+        var socket;
+        var playerNum = 1;
+        var gameStarted = false;
+
+        function setupSocket()
+        {
+          socket = io.connect(null, {resource: 'ld26/socket.io'});
+          socket.emit('subscribe', roomUUID);
+          socket.on('pnum', function(data) {
+            playerNum = data;
+          });
+          socket.on('loadGame', function(data) {
+            gameStarted = false;
+            var sc = document.createElement("script");
+            sc.src = "/ld26/" + data;
+            sc.onload = function() {
+              socket.emit("doneLoad", data);
+            }
+            document.body.appendChild(sc);
+          });
+          socket.on('start', function() {
+            gameStarted = true;
+            start();
+          });
+          socket.on('msg', function(data) {
+            print(data);
+          });
+          socket.on('jump', function(data) {
+            doJump(data);
+          });
+          socket.on('move', function(data) {
+            doMove(data);
+          });
+          socket.on('kill', function(data){
+            doKill(data);
+          });
+          socket.on('win', function(data){
+            doWin(data);
+          });
+        }
+        var chatoutput, chatform, chatinput;
+        window.onload = function()
+        {
+          chatoutput = document.getElementById("chatoutput");
+          chatform = document.getElementById("chatform");
+          chatinput = document.getElementById("chatinput");
+
+          chatform.onsubmit = function()
+          {
+            socket.emit("msg", chatinput.value);
+            chatinput.value = "";
+            return false;
+          }
+
+          setupSocket();
+          initialize();
+          canvas.onmousemove = function(e) {
+            var x = e.offsetX==undefined?(e.layerX-canvas.offsetLeft):e.offsetX;
+            var y = e.offsetY==undefined?(e.layerY-canvas.offsetTop):e.offsetY;
+            mousemove(x,y);
+          };
+          canvas.onmousedown = click;
+          init();
+          (function animationLoop() {
+            window.requestAnimationFrame(animationLoop);
+            if(gameStarted)
+            {
+            }
+            loop();
+          })();
+        }
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" >
+      If you're seeing this, your browser doesn't think you support HTML5 Canvas. Try the latest version of firefox or chrome.
+    </canvas>
+    <textarea id="chatoutput" disabled></textarea>
+    <form id="chatform">
+      <input id="chatinput" />
+    </form>
+  </body>
+</html>
